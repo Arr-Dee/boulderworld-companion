@@ -58,11 +58,13 @@ Home
             </div>
         </div>
         <button class="btn btn-primary" type="submit">Save score</button>
+        
     </form>
+    <button class="btn btn-secondary" id="clear-button">Clear</button>
 </div>
 
 <script>
-    console.log("hi")
+    console.log("Oh, hello there.")
 
     let list = document.getElementsByTagName("input");
 
@@ -74,6 +76,15 @@ Home
               calculateTotal();
         })
     }
+
+    let clearButton = document.getElementById("clear-button");
+
+    clearButton.addEventListener("click", () => {
+        for (let item of list) {
+            item.checked = false;
+            calculateTotal() 
+        }
+    })
 
     function calculateTotal() {
         let sum = 0;
