@@ -1,0 +1,39 @@
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
+}
+
+.instructions{
+  padding: 20px 0 20px 0;
+}
+
+.score-sheet{
+    margin: 5px 0 5px 0;
+}
+.btn{
+    margin: 0.1rem;
+}
+
+#climb-number{
+    display: inline-block;
+    width: 40px;
+
+    font-size: 20px;
+}
+
+.score-box{
+  padding: 20px 0 20px 0;
+}
+
+#total-score{
+    font-size: 24px;
+    font-weight: bold;
+    padding-bottom: 20px;
+}

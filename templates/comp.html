@@ -1,0 +1,98 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Home
+{% endblock %}
+
+{% block main %}
+{% set remainder = no_climbs%3 %}
+<div class="container text-center score-sheet">
+    <div class="instructions">
+        <div>
+            CTRL + click to deselect.
+        </div>
+        <div>
+            {% if not session["user_id"] %}
+            Make sure to log in to keep track of scores across multiple devices!
+            {% endif %} 
+        </div>
+    </div>
+
+    <form action={{ "/comp/" + comp }} method="post">
+
+        <div class="row justify-content-md-center">
+            {% for col in range(3) %}
+                {% if col == 2 and remainder > 0 %}
+                {% set end = remainder %}
+                {% else %}
+                {% set end = 0 %}
+                {% endif %}
+            <div class="col-md-auto">
+                {% for i in range(1 + (no_climbs//3 * col), (no_climbs//3|round * (col + 1)) + 1 + end) %}       
+                        <fieldset id="climb-{{ i }}" name="radio-climb">
+                            <span id="climb-number">{{ i }}</span>
+        <!--                     <input type="radio" class="btn-check" name="climb-{{ i }}" id="none-{{ i }}" value=0
+                                autocomplete="off" checked>
+                            <label class="btn btn-outline-danger" for="none-{{ i }}"> </label> -->
+        
+                            <input type="radio" class="btn-check" name="climb-{{ i }}" id="zone-{{ i }}" value="zone"
+                                autocomplete="off" {% if results[i - 1] == 'zone' %} checked {% endif %}>
+                            <label class="btn btn-outline-warning" for="zone-{{ i }}">Zone</label>
+        
+                            <input type="radio" class="btn-check" name="climb-{{ i }}" id="top-{{ i }}" value="top"
+                                autocomplete="off" {% if results[i - 1] == 'top' %} checked {% endif %}>
+                            <label class="btn btn-outline-success" for="top-{{ i }}">Top</label>
+                        </fieldset>
+                   
+                {% endfor %}
+            </div>
+            {% endfor %}
+        </div>
+        <div class="row">        
+            <div name="score" class="score-box">
+                <div name='score' id="total-score">
+                    {% if score is defined %} {{ score }} {% else %} 0 {% endif %}
+                </div>
+                Target score:
+                <input type = 'number' name='target-score'/>
+            </div>
+        </div>
+        <button class="btn btn-primary" type="submit">Save score</button>
+    </form>
+</div>
+
+<script>
+    console.log("hi")
+
+    let list = document.getElementsByTagName("input");
+
+    for (let item of list) {
+        item.addEventListener("click", (e) => {
+            if(e.ctrlKey) {
+                item.checked = false;
+              }
+              calculateTotal();
+        })
+    }
+
+    function calculateTotal() {
+        let sum = 0;
+        let points = 0;
+        for (let item of list) {
+            if (item.checked == true) {
+                if (item.value == "top") {
+                    points = 10;
+                } else if (item.value = "zone") {
+                    points = 6;
+                } else {
+                    points = 0;
+                }
+                sum += points;
+            }
+        }
+        document.getElementById("total-score").innerHTML = sum
+    }
+
+</script>
+
+{% endblock %}
