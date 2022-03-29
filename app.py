@@ -66,7 +66,12 @@ def comp(comp_id):
     else:
 
         # Get data from cookies
-        score = int(request.cookies.get(f'{comp}_score'))
+        score = request.cookies.get(f'{comp}_score')
+        print(score)
+        if score is None:
+            score = 0
+        else:
+            score = int(score)
 
         if session:
             data = db.execute("SELECT * FROM results WHERE user_id = ? AND comp = ?", session["user_id"], comp)
