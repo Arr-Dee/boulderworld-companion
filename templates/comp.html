@@ -5,11 +5,14 @@ Home
 {% endblock %}
 
 {% block main %}
+{% if figure is not none %}
+<img class="img-fluid" src='data:image/png;base64,{{ figure }}' alt="cumulative graph"/>
+{% endif %}
 {% set remainder = no_climbs%3 %}
 <div class="container text-center score-sheet">
     <div class="instructions">
         <div>
-            CTRL + click to deselect.
+            Click label number to clear results, or CTRL + click to deselect.
         </div>
         <div>
             {% if not session["user_id"] %}
@@ -30,7 +33,7 @@ Home
             <div class="col-md-auto">
                 {% for i in range(1 + (no_climbs//3 * col), (no_climbs//3|round * (col + 1)) + 1 + end) %}       
                         <fieldset id="climb-{{ i }}" name="radio-climb">
-                            <span id="climb-number">{{ i }}</span>
+                            <span id="climb-number" class="climb-label">{{ i }}</span>
         <!--                     <input type="radio" class="btn-check" name="climb-{{ i }}" id="none-{{ i }}" value=0
                                 autocomplete="off" checked>
                             <label class="btn btn-outline-danger" for="none-{{ i }}"> </label> -->
@@ -71,6 +74,8 @@ Home
     console.log("Oh, hello there.")
 
     let list = document.getElementsByTagName("input");
+    let climbLabels = document.getElementsByClassName("climb-label")
+    let clearButton = document.getElementById("clear-button");
 
     for (let item of list) {
         item.addEventListener("click", (e) => {
@@ -81,13 +86,28 @@ Home
         })
     }
 
-    let clearButton = document.getElementById("clear-button");
+
+    for (let label of climbLabels) {
+        label.addEventListener("click", () => {
+            // * by 2 due to number of options per climb = 2
+            // - 1 to index back for Top, - 2 for the Zone
+            topValue = list[(label.innerHTML * 2) - 1]
+            zoneValue = list[(label.innerHTML * 2) - 2]
+
+            topValue.checked = false
+            zoneValue.checked = false
+
+            calculateTotal() 
+        })
+        
+    }
+
 
     clearButton.addEventListener("click", () => {
         for (let item of list) {
-            item.checked = false;
-            calculateTotal() 
+            item.checked = false;   
         }
+        calculateTotal()
     })
 
     function calculateTotal() {

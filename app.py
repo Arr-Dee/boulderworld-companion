@@ -2,7 +2,7 @@ from flask import Flask, redirect, make_response, render_template, request, sess
 from cs50 import SQL
 from flask_session.__init__ import Session
 from werkzeug.security import check_password_hash, generate_password_hash
-from helpers import calculate_score, password_check
+from helpers import calculate_score, password_check, plot_data
 import json
 
 app = Flask(__name__)
@@ -55,23 +55,24 @@ def comp(comp_id):
             # Calculate score
             score = calculate_score(climb_data,zone,top)
 
-            resp = make_response(render_template('comp.html', comp=comp, no_climbs=no_climbs, score=score, results=results))
+            #resp = make_response(render_template('comp.html', comp=comp, no_climbs=no_climbs, score=score, results=results, figure=figure))
 
             # Set cookies
-            resp.set_cookie(f'{comp}_score', str(score))
-            resp.set_cookie(f'{comp}_data', json.dumps(results))
+            #resp.set_cookie(f'{comp}_score', str(score))
+            #resp.set_cookie(f'{comp}_data', json.dumps(results))
             
-            return resp
+            #return resp
 
     else:
 
         # Get data from cookies
-        score = request.cookies.get(f'{comp}_score')
+        score = int(request.cookies.get(f'{comp}_score'))
 
         if session:
             data = db.execute("SELECT * FROM results WHERE user_id = ? AND comp = ?", session["user_id"], comp)
             if data:
                 results = json.loads(data[0]["results"])
+                score = calculate_score(results,zone,top)
             else:
                 results = []
         elif f'{comp}_data' in request.cookies:
@@ -79,7 +80,21 @@ def comp(comp_id):
         else:
             results = []
 
-        return render_template("comp.html", comp=comp, no_climbs=no_climbs, score=score, results=results)
+        #return render_template("comp.html", comp=comp, no_climbs=no_climbs, score=score, results=results, figure=figure)
+
+    # Create figure, using data from cookies
+    if not isinstance(score, int):
+        score = 0
+
+    figure = plot_data(comp_id, score)
+
+    resp = make_response(render_template('comp.html', comp=comp, no_climbs=no_climbs, score=score, results=results, figure=figure))
+
+    # Set cookies
+    resp.set_cookie(f'{comp}_score', str(score))
+    resp.set_cookie(f'{comp}_data', json.dumps(results))
+            
+    return resp
 
 
 @app.route("/register", methods=["GET", "POST"])

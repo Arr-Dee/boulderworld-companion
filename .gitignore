@@ -2,3 +2,4 @@ sqlite3.exe
 __pycache__
 flask_session
 pyvenv.cfg
+test.py

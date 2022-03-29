@@ -1,3 +1,55 @@
+import re
+import pandas as pd
+import matplotlib.pyplot as plt
+import numpy as np
+import base64
+from io import BytesIO
+from os.path import exists
+
+def plot_data(comp_id, score):
+
+    # If there is no data available return
+    if not exists(f'static/data/{comp_id}.csv'):
+        return None
+
+    # Read data in and sort by score
+    df = pd.read_csv(f'static/data/{comp_id}.csv')
+    df = df.sort_values(by=["Score"])
+
+    # Set up fig and ax
+    fig, ax = plt.subplots()
+
+    # Convert scores from df to array
+    x = df["Score"].to_numpy()
+
+    # Set number of bins equal to number of rows/peoples
+    n_bins = len(df.index)
+
+    # Plot distribution
+    n, bins, patches = ax.hist(x, n_bins, density=True, histtype='step',
+                            cumulative=True)
+
+    # Configure Plot
+    if score is not None:
+        plt.axvline(x=int(score), color='r', label=f'Your score - {score}')
+        ax.legend(loc='right')
+    ax.grid(True)
+    ax.set_title('Cumulative distribution of total points scored')
+    ax.set_xlabel('Points scored')
+    ax.set_ylabel('Percentile')
+
+    # Show plot (TESTING)
+    #plt.show()
+
+    # Save it to a temporary buffer.
+    buf = BytesIO()
+    fig.savefig(buf, format="png")
+    
+    # Embed the result in the html output.
+    data = base64.b64encode(buf.getbuffer()).decode("ascii")
+
+    return data
+
 
 def calculate_score(data, zone, top):
     score = 0
@@ -8,7 +60,7 @@ def calculate_score(data, zone, top):
             score += zone
 
     return score
-import re
+
 
 def password_check(password):
     """
