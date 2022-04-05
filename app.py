@@ -17,7 +17,8 @@ app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
 
-db = SQL("sqlite:///database.db")
+# SQLite
+#db = SQL("sqlite:///database.db")
 
 # PostgreSQL
 DATABASE_URL = os.environ['DATABASE_URL']
@@ -145,7 +146,7 @@ def comp(comp_id):
 
     figure = plot_data(comp_id, score)
 
-    resp = make_response(render_template('comp.html', comp=comp, no_climbs=no_climbs, score=score, results=results, figure=figure))
+    resp = make_response(render_template('comp.html', comp=comp, no_climbs=no_climbs, score=score, zone=zone, top=top, results=results, figure=figure))
 
     # Set cookies
     resp.set_cookie(f'{comp}_score', str(score))
