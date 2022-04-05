@@ -20,8 +20,9 @@
             </button>
             <div class="collapse navbar-collapse" id="navbar">
                     <ul class="navbar-nav mt-2">
-                        <li class="nav-item"><a class="nav-link" href="/comp/feb22">Feb 2022</a></li>
-                        <li class="nav-item"><a class="nav-link" href="/comp/mar22">Mar 2022</a></li>
+                    {% for item in menu %}
+                        <li class="nav-item"><a class="nav-link" href={{"/comp/" + item[0] }}>{{ item[1] }}</a></li>
+                    {% endfor %}
                     </ul>
                 {% if session["user_id"] %}
                     <ul class="navbar-nav ms-auto mt-2">
