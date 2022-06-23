@@ -17,6 +17,7 @@ input[type=number] {
 .score-sheet{
     margin: 5px 0 5px 0;
 }
+
 .btn{
     margin: 0.1rem;
 }
@@ -33,11 +34,10 @@ input[type=number] {
 }
 
 .score-box{
-  padding: 20px 0 20px 0;
+  padding: 10px 0 0px 0;
 }
 
 #total-score{
     font-size: 24px;
     font-weight: bold;
-    padding-bottom: 20px;
 }

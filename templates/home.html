@@ -6,12 +6,19 @@ Home
 
 {% block main %}
 <div class="container py-5">
-<h1>What's my BWR?</h1>
-<div class="py-1">
-    Boulder World Rating is your personal score from the competition walls at Boulder World Belfast.
-</div>
-<div class="py-1">
-    Use the individual score cards for the competitions to keep track of your results, as well as comparing them to everyone else's - and see what your BWR is.
+    <h1>BoulderWorld Companion</h1>
+    <div class="py-1">
+        The BoulderWorld Companion keeps track of your Competion Wall scores (Zones/Tops) at Boulder World Belfast.
+    </div>
+    <div class="py-1">
+        Use the individual score cards for the competitions to keep track of your results, as well as comparing them to everyone else's - and see how you match up!
+    </div>
+
+    {% if info is defined %}
+    <div class="py-5">
+        <h4>Check out the latest competition: <a href={{"/comp/" + info[0][1] }}>{{ info[0][2] }}</a></h4>
+    </div>
+    {% endif %}
 </div>
 
 {% endblock %}

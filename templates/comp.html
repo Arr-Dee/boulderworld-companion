@@ -1,19 +1,31 @@
 {% extends "layout.html" %}
 
 {% block title %}
-Home
+{{ name }}
 {% endblock %}
 
 {% block main %}
+
+<h2>{{ name }}</h2>
+
+<!-- TOTAL SCORE -->
+<div class="row">        
+    <div name="score" class="score-box">
+        <div name='score' id="total-score">
+            {% if score is defined %} {{ score }} {% else %} 0 {% endif %}
+        </div>
+        <!-- Target score:
+        <input type = 'number' name='target-score'/> -->
+    </div>
+</div>
+
 {% if figure is not none %}
 <img class="img-fluid" src='data:image/png;base64,{{ figure }}' alt="cumulative graph"/>
 {% endif %}
+
 {% set remainder = no_climbs%3 %}
 <div class="container text-center score-sheet">
     <div class="instructions">
-        <div>
-            Click label number to clear results, or CTRL + click to deselect.
-        </div>
         <div>
             {% if not session["user_id"] %}
             Make sure to log in to keep track of scores across multiple devices!
@@ -51,19 +63,15 @@ Home
             </div>
             {% endfor %}
         </div>
-        <div class="row">        
-            <div name="score" class="score-box">
-                <div name='score' id="total-score">
-                    {% if score is defined %} {{ score }} {% else %} 0 {% endif %}
-                </div>
-                Target score:
-                <input type = 'number' name='target-score'/>
-            </div>
+        <div class="instructions">
+            Click label number to clear results, or CTRL + click to deselect.
         </div>
+
         <button class="btn btn-primary" type="submit">Save score</button>
         
     </form>
     <button class="btn btn-secondary" id="clear-button">Clear</button>
+
 </div>
 
 <script>
@@ -111,14 +119,18 @@ Home
     })
 
     function calculateTotal() {
+        // Ignore these errors as the Jinja notation isn't recognised in JS
+        let top = {{ top }};
+        let zone = {{ zone }};
+
         let sum = 0;
         let points = 0;
         for (let item of list) {
             if (item.checked == true) {
                 if (item.value == "top") {
-                    points = {{ top }};
+                    points = top;
                 } else if (item.value = "zone") {
-                    points = {{ zone }};
+                    points = zone;
                 } else {
                     points = 0;
                 }

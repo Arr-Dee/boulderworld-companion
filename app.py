@@ -1,4 +1,5 @@
-from flask import Flask, redirect, make_response, render_template, request, session
+from traceback import print_tb
+from flask import Flask, redirect, make_response, render_template, request, session, url_for
 from cs50 import SQL
 from flask_session.__init__ import Session
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -51,15 +52,15 @@ def inject_menu():
 
     # Fill in with your actual menu dictionary:
     menu = db_execute("SELECT comp, name FROM comps;")
-    print(menu)
+    # print(menu)
 
     return dict(menu=menu)
 
 
 @app.route("/")
 def home():
-    
-    return render_template("home.html")
+    info  = db_execute("SELECT * FROM comps ORDER by id DESC LIMIT 1")
+    return render_template("home.html", info=info)
 
 
 @app.route("/comp/<comp_id>", methods=['POST', 'GET'])
@@ -71,31 +72,26 @@ def comp(comp_id):
     #zone = info["zone"]
     #top = info["top"]
 
+    session['url'] = url_for('comp', comp_id=comp_id)
+    print(session['url'])
+
     # PostgreSQL
     info = db_execute("SELECT * FROM comps WHERE comp = %s;", (comp_id,))[0]
     comp = comp_id
+    name = info[2]
     no_climbs = info[3]
     zone = info[4]
     top = info[5]
 
-
     if request.method == 'POST':
-            climb_data = []
+            climb_data = [request.form.get(f'climb-{n}') for n in range(1,no_climbs+1)]
 
-            for n in range(1,no_climbs+1):
-                climb_data.append(request.form.get(f'climb-{n}'))
+            # for n in range(1,no_climbs+1):
+            #     climb_data.append(request.form.get(f'climb-{n}'))
 
             # If User is logged in
-            if session:
-                #print("Logged in.")
-
-                # If User already has a saved list of results - SQLite
-                #if db.execute("SELECT * FROM results WHERE user_id = ? AND comp = ?", session["user_id"], comp):
-                #    db.execute("UPDATE results SET results = ? WHERE user_id = ? AND comp = ?", json.dumps(climb_data), session["user_id"],comp)
-                #else:
-                #    db.execute("INSERT INTO results (user_id, comp, results) VALUES(?, ?, ?)", session["user_id"], comp, json.dumps(climb_data))
-                #results = json.loads(db.execute("SELECT results FROM results WHERE user_id = ? AND comp = ?", session["user_id"], comp)[0]["results"])
-
+            try:
+                session["user_id"]
                 # If User already has a saved list of results - PostgreSQL
                 logged_in = db_execute("SELECT * FROM results WHERE user_id = %s AND comp = %s;", (session["user_id"], comp))
                 if logged_in:
@@ -104,11 +100,10 @@ def comp(comp_id):
                     db_execute("INSERT INTO results (user_id, comp, results) VALUES(%s, %s, %s)", (session["user_id"], comp, json.dumps(climb_data)))
 
                 json_results = db_execute("SELECT results FROM results WHERE user_id = %s AND comp = %s", (session["user_id"], comp))
-                print(json_results)
+                # print(json_results)
                 results = json.loads(json_results[0][0])
 
-
-            else:
+            except:
                 results = climb_data
 
             # Calculate score
@@ -118,14 +113,15 @@ def comp(comp_id):
 
         # Get data from cookies
         score = request.cookies.get(f'{comp}_score')
-        print(score)
+        # print(score)
+
         if score is None:
             score = 0
         else:
             score = int(score)
 
-        if session:
-            #data = db.execute("SELECT * FROM results WHERE user_id = ? AND comp = ?", session["user_id"], comp)
+        try:
+            session["user_id"]
             data = db_execute("SELECT * FROM  results WHERE user_id = %s AND comp = %s;", (session["user_id"], comp))
             if data:
                 results = json.loads(data[0][3])
@@ -133,10 +129,11 @@ def comp(comp_id):
                 score = calculate_score(results,zone,top)
             else:
                 results = []
-        elif f'{comp}_data' in request.cookies:
-            results = json.loads(request.cookies.get(f'{comp}_data'))
-        else:
-            results = []
+        except:
+            if f'{comp}_data' in request.cookies:
+                results = json.loads(request.cookies.get(f'{comp}_data'))
+            else:
+                results = []
 
         #return render_template("comp.html", comp=comp, no_climbs=no_climbs, score=score, results=results, figure=figure)
 
@@ -146,7 +143,7 @@ def comp(comp_id):
 
     figure = plot_data(comp_id, score)
 
-    resp = make_response(render_template('comp.html', comp=comp, no_climbs=no_climbs, score=score, zone=zone, top=top, results=results, figure=figure))
+    resp = make_response(render_template('comp.html', comp=comp, name=name, no_climbs=no_climbs, score=score, zone=zone, top=top, results=results, figure=figure))
 
     # Set cookies
     resp.set_cookie(f'{comp}_score', str(score))
@@ -196,9 +193,11 @@ def register():
 @app.route("/login", methods=["GET", "POST"])
 def login():
     """Log user in"""
-
+    print(session.get('url'))
     # Forget any user_id
     session.clear()
+
+    print(request.path)
 
     # User reached route via POST (as by submitting a form via POST)
     if request.method == "POST":
