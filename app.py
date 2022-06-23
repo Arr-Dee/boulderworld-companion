@@ -86,9 +86,6 @@ def comp(comp_id):
     if request.method == 'POST':
             climb_data = [request.form.get(f'climb-{n}') for n in range(1,no_climbs+1)]
 
-            # for n in range(1,no_climbs+1):
-            #     climb_data.append(request.form.get(f'climb-{n}'))
-
             # If User is logged in
             try:
                 session["user_id"]
@@ -163,7 +160,6 @@ def register():
         password = request.form.get("password")
 
         res = password_check(password)
-        print(res)
 
         if not res['password_ok']:
             return render_template("register.html", error="Passwords do not meet specified requirements.")
@@ -193,11 +189,9 @@ def register():
 @app.route("/login", methods=["GET", "POST"])
 def login():
     """Log user in"""
-    print(session.get('url'))
+
     # Forget any user_id
     session.clear()
-
-    print(request.path)
 
     # User reached route via POST (as by submitting a form via POST)
     if request.method == "POST":

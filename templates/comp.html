@@ -6,17 +6,31 @@
 
 {% block main %}
 
-<h2>{{ name }}</h2>
+
 
 <!-- TOTAL SCORE -->
-<div class="row">        
+<div class="row"> 
+    <h2>{{ name }}</h2>
     <div name="score" class="score-box">
+        Score 
         <div name='score' id="total-score">
             {% if score is defined %} {{ score }} {% else %} 0 {% endif %}
         </div>
         <!-- Target score:
         <input type = 'number' name='target-score'/> -->
     </div>
+</div>
+
+<div class="secondary-score-box">
+    <div class="score-text">
+        Score
+    </div> 
+    <div id="secondary-total-score">
+        {% if score is defined %} {{ score }} {% else %} 0 {% endif %}
+    </div>
+    <a class="to-bottom-button" onClick="document.getElementById('clear-button').scrollIntoView();">
+        <img src="../static/img/down_arrow_2.png" alt="down_arrow"/>
+    </a>
 </div>
 
 {% if figure is not none %}
@@ -138,6 +152,7 @@
             }
         }
         document.getElementById("total-score").innerHTML = sum
+        document.getElementById("secondary-total-score").innerHTML = sum
     }
 
 </script>

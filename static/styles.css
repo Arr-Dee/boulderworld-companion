@@ -37,7 +37,55 @@ input[type=number] {
   padding: 10px 0 0px 0;
 }
 
-#total-score{
-    font-size: 24px;
-    font-weight: bold;
+.secondary-score-box{
+  /* Hidden until max-width reach threshold */
+  visibility: hidden;
+
+  padding: 10px 0 8px 0;  
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background-color: rgb(250, 250, 250);
+  box-shadow: 0 -1px 15px #b6b6b6;
 }
+
+#total-score{
+  font-size: 24px;
+  font-weight: bold;
+}
+
+#secondary-total-score{
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.score-text{
+  position:fixed;
+	bottom: 12px;
+	left:40px;
+	border-radius:50px;
+	text-align:center;
+}
+
+.to-bottom-button{
+	position:fixed;
+	bottom: 14px;
+	right:40px;
+	color:#FFF;
+	border-radius:50px;
+	text-align:center;
+}
+
+
+@media screen and (max-width: 767px) {
+  .secondary-score-box {
+    visibility: visible;
+  }
+
+  footer{
+    padding-bottom: 50px;
+  }
+}
+
+
