@@ -1,0 +1,91 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Leaderboard
+{% endblock %}
+
+{% block main %}
+<div class="container py-5">
+    <h2>Leaderboard</h2>
+    <select name="select-comp" id="select-comp">
+        <option value="" selected disabled hidden>Select comp</option>
+        {% for item in comps %}
+            <option value={{ item }}>{{ item }}</option>
+        {% endfor %}
+    </select>
+    <div id="addtable">
+        
+    </div>
+</div>
+
+
+<script type="text/javascript">
+    let data = {{ table | safe }}
+    
+    console.log(data)
+
+    function filterData(compName) {
+        let newData = []
+        console.log(compName)
+        console.log(data)
+        data.forEach((value, index, array) => {
+            if (value.filter(i => i == compName).length == 1) {
+                newData.push(value)
+            }
+        })
+        return newData
+        // console.log(filteredData)
+    }
+
+    var dropdown = document.getElementById("select-comp");
+
+    let x = dropdown.addEventListener("change", () => {
+        let compName = dropdown.options[dropdown.selectedIndex].text;
+        filteredData = filterData(compName)
+        addTable(filteredData, compName)
+    })
+
+    function addTable(filteredData, name) {
+        var c, r, t;
+
+        t = document.createElement('table');
+        t.className = 'leaderboard'
+
+        // Remove old table
+        var addT = document.getElementById("addtable")
+        if (addT.firstChild != null){
+            addT.removeChild(addT.firstChild);
+        }
+
+        for (i in filteredData) {
+            if (filteredData[i][2] != 0) {
+                r = t.insertRow(0); 
+                c = r.insertCell(0);
+                c.innerHTML = filteredData[i][0];
+
+                c = r.insertCell(1);
+                c.innerHTML = filteredData[i][1];
+
+                c = r.insertCell(2);
+                c.innerHTML = filteredData[i][2]; 
+            }
+        }
+
+        // Create headers
+        var header = t.createTHead();
+        r = header.insertRow(0);
+        c = r.insertCell(0);
+        c.innerHTML = "<b>Username</b>";
+        c = r.insertCell(1);
+        c.innerHTML = "<b>Competition</b>";
+        c = r.insertCell(2);
+        c.innerHTML = "<b>Score</b>";
+
+        document.getElementById("addtable").appendChild(t);
+    }
+
+
+</script>
+
+
+{% endblock %}

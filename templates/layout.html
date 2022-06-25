@@ -23,6 +23,7 @@
                     {% for item in menu %}
                         <li class="nav-item"><a class="nav-link" href={{"/comp/" + item[0] }}>{{ item[1] }}</a></li>
                     {% endfor %}
+                        <li class="nav-item"><a class="nav-link" href="/leaderboard">Leaderboard</a></li>
                     </ul>
                 {% if session["user_id"] %}
                     <ul class="navbar-nav ms-auto mt-2">

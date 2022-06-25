@@ -1,3 +1,4 @@
+import re
 from traceback import print_tb
 from flask import Flask, redirect, make_response, render_template, request, session, url_for
 from cs50 import SQL
@@ -148,6 +149,25 @@ def comp(comp_id):
             
     return resp
 
+
+@app.route("/leaderboard")
+def leaderboard():
+    # Find all comps in db
+    results = db_execute("SELECT users.username, comps.name, results.results, comps.zone, comps.top FROM results INNER JOIN comps ON results.comp = comps.comp INNER JOIN users ON results.user_id = users.id ORDER BY comps.id")
+
+    # drop down to select comp
+    comps = list(set([i[1] for i in results]))
+    print(comps)
+    # show scores per user in a table
+    table = [[i[0], i[1], calculate_score(json.loads(i[2]),i[3],i[4])] for i in results]
+
+    return render_template("leaderboard.html", table=table, comps=comps)
+
+
+
+
+
+# REGISTER, LOGIN & LOGOUT ROUTES
 
 @app.route("/register", methods=["GET", "POST"])
 def register():

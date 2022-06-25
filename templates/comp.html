@@ -52,9 +52,9 @@
         <div class="row justify-content-md-center">
             {% for col in range(3) %}
                 {% if col == 2 and remainder > 0 %}
-                {% set end = remainder %}
+                    {% set end = remainder %}
                 {% else %}
-                {% set end = 0 %}
+                    {% set end = 0 %}
                 {% endif %}
             <div class="col-md-auto">
                 {% for i in range(1 + (no_climbs//3 * col), (no_climbs//3|round * (col + 1)) + 1 + end) %}       
@@ -133,18 +133,14 @@
     })
 
     function calculateTotal() {
-        // Ignore these errors as the Jinja notation isn't recognised in JS
-        let top = {{ top }};
-        let zone = {{ zone }};
-
         let sum = 0;
         let points = 0;
         for (let item of list) {
             if (item.checked == true) {
                 if (item.value == "top") {
-                    points = top;
+                    points = {{ top }};
                 } else if (item.value = "zone") {
-                    points = zone;
+                    points = {{ zone }};
                 } else {
                     points = 0;
                 }
