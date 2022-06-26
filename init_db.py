@@ -12,7 +12,8 @@ cur = conn.cursor()
 cur.execute('DROP TABLE IF EXISTS users;')
 cur.execute('CREATE TABLE users (id serial PRIMARY KEY NOT NULL,'
                                  'username TEXT NOT NULL,'
-                                 'hash TEXT NOT NULL);'
+                                 'hash TEXT NOT NULL)'
+                                 'leaderboard BOOLEAN NOT NULL;'
                                  )
 
 # Execute a command: this creates a new table

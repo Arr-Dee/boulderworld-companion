@@ -77,9 +77,48 @@ input[type=number] {
 	text-align:center;
 }
 
-.leaderboard {
-  width: 100%
+#select-comp {
+  font-size: 16px;
+  margin: 10px 0 10px 0;
+  padding: 5px;
 }
+
+/* LEADERBOARD SEARCH BAR */
+#search-bar {
+  /* background-image: url('/css/searchicon.png');
+  background-position: 10px 12px;
+  background-repeat: no-repeat; */
+  width: 100%;
+  font-size: 16px;
+  padding: 12px 20px 12px 40px;
+  border: 1px solid #ddd;
+  margin-bottom: 12px;
+}
+
+#leaderboard-table {
+  border-collapse: collapse;
+  width: 100%;
+  border: 1px solid #ddd;
+  font-size: 16px;
+}
+
+#leaderboard-table th, #leaderboard-table td {
+  text-align: left;
+  padding: 12px;
+}
+
+#leaderboard-table tr {
+  border-bottom: 1px solid #ddd;
+}
+
+#leaderboard-table tr.header, #leaderboard-table tr:hover {
+  background-color: #f1f1f1;
+}
+
+#clickable-heading {
+  cursor: pointer;
+}
+
 
 @media screen and (max-width: 767px) {
   .secondary-score-box {

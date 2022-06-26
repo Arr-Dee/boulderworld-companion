@@ -27,6 +27,7 @@
                     </ul>
                 {% if session["user_id"] %}
                     <ul class="navbar-nav ms-auto mt-2">
+                        <li class="nav-item"><a class="nav-link" href={{ "/profile/" + session["username"] }}>{{ session["username"] }}</a></li>
                         <li class="nav-item"><a class="nav-link" href="/logout">Log Out</a></li>
                     </ul>
                 {% else %}
@@ -45,7 +46,7 @@
     </main>
     
     <footer class="mb-5 small text-center text-muted">
-        Data available made publically available by <a href="https://boulderworldbelfast.com/">Boulder World Belfast</a>.
+        Data made publically available by <a href="https://boulderworldbelfast.com/">Boulder World Belfast</a>.
     </footer>
 
 </body>

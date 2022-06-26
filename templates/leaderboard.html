@@ -13,6 +13,9 @@ Leaderboard
             <option value={{ item }}>{{ item }}</option>
         {% endfor %}
     </select>
+
+    <input type="text" id="search-bar" onkeyup="searchFunction()" placeholder="Search name..." disabled>
+
     <div id="addtable">
         
     </div>
@@ -22,8 +25,6 @@ Leaderboard
 <script type="text/javascript">
     let data = {{ table | safe }}
     
-    console.log(data)
-
     function filterData(compName) {
         let newData = []
         console.log(compName)
@@ -48,8 +49,11 @@ Leaderboard
     function addTable(filteredData, name) {
         var c, r, t;
 
+        // Enable the search bar
+        document.getElementById("search-bar").disabled = false;
+
         t = document.createElement('table');
-        t.className = 'leaderboard'
+        t.setAttribute('id','leaderboard-table');
 
         // Remove old table
         var addT = document.getElementById("addtable")
@@ -57,6 +61,7 @@ Leaderboard
             addT.removeChild(addT.firstChild);
         }
 
+        // Create the new table
         for (i in filteredData) {
             if (filteredData[i][2] != 0) {
                 r = t.insertRow(0); 
@@ -71,19 +76,53 @@ Leaderboard
             }
         }
 
-        // Create headers
+        // CREATE TABLE HEADERS
         var header = t.createTHead();
         r = header.insertRow(0);
+        // Username
         c = r.insertCell(0);
+        c.setAttribute('onclick','sortTable(0)');
+        c.setAttribute('id','clickable-heading');
         c.innerHTML = "<b>Username</b>";
+        // Competition
         c = r.insertCell(1);
+        c.setAttribute('onclick','sortTable(1)');
+        c.setAttribute('id','clickable-heading');
         c.innerHTML = "<b>Competition</b>";
+        // Score
         c = r.insertCell(2);
+        c.setAttribute('onclick','sortTable(2)');
+        c.setAttribute('id','clickable-heading');
         c.innerHTML = "<b>Score</b>";
 
         document.getElementById("addtable").appendChild(t);
     }
 
+    function sortTable(n) {
+        //console.log("Table being sorted... (WIP)" + n)
+    }
+
+    function searchFunction() {
+        // Declare variables
+        var input, filter, table, tr, td, i, txtValue;
+        input = document.getElementById("search-bar");
+        filter = input.value.toUpperCase();
+        table = document.getElementById("leaderboard-table");
+        tr = table.getElementsByTagName("tr");
+      
+        // Loop through all table rows, and hide those who don't match the search query
+        for (i = 0; i < tr.length; i++) {
+          td = tr[i].getElementsByTagName("td")[0];
+          if (td) {
+            txtValue = td.textContent || td.innerText;
+            if (txtValue.toUpperCase().indexOf(filter) > -1) {
+              tr[i].style.display = "";
+            } else {
+              tr[i].style.display = "none";
+            }
+          }
+        }
+      }
 
 </script>
 

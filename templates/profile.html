@@ -1,0 +1,35 @@
+{% extends "layout.html" %}
+
+{% block title %}
+{{ username }}
+{% endblock %}
+
+{% block main %}
+<div class="container py-5">
+    {% if username is defined %}
+    <h2>{{ username }}</h2>
+        {% if username == session["username"] %}
+            <form action={{ "/profile/" + username }} method="post">
+                <div class="mb-3">
+                    <input type="checkbox" id="leaderboard-check" name="leaderboard-check" {% if checked == True %} checked {% endif %}>
+                    <label for="leaderboard-check">Add my scores to the leaderboard</label><br>
+                </div>
+                <button class="btn btn-primary" type="submit">Update</button>
+            </form>
+            {% if status is defined %}
+            <p class="py-3" style="color:green;">{{ status }}</p>
+            {% endif %}
+        {% endif %}
+    {% else %}
+    <h2>Oops, the user you are looking does not exist.</h2>
+    {% endif %}
+</div>
+
+
+<script type="text/javascript">
+
+
+</script>
+
+
+{% endblock %}

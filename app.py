@@ -47,7 +47,7 @@ def db_execute(query, values=None):
         return
 
 
-# Provide Nav Links for all pages
+# Provides Nav Links for all pages
 @app.context_processor
 def inject_menu():
 
@@ -58,12 +58,14 @@ def inject_menu():
     return dict(menu=menu)
 
 
+# HOME
 @app.route("/")
 def home():
     info  = db_execute("SELECT * FROM comps ORDER by id DESC LIMIT 1")
     return render_template("home.html", info=info)
 
 
+# COMPETITION PAGES
 @app.route("/comp/<comp_id>", methods=['POST', 'GET'])
 def comp(comp_id):
     # SQLite
@@ -150,10 +152,11 @@ def comp(comp_id):
     return resp
 
 
+# LEADERBOARD
 @app.route("/leaderboard")
 def leaderboard():
     # Find all comps in db
-    results = db_execute("SELECT users.username, comps.name, results.results, comps.zone, comps.top FROM results INNER JOIN comps ON results.comp = comps.comp INNER JOIN users ON results.user_id = users.id ORDER BY comps.id")
+    results = db_execute("SELECT users.username, comps.name, results.results, comps.zone, comps.top FROM results INNER JOIN comps ON results.comp = comps.comp INNER JOIN users ON results.user_id = users.id WHERE users.leaderboard is TRUE ORDER BY comps.id")
 
     # drop down to select comp
     comps = list(set([i[1] for i in results]))
@@ -164,11 +167,28 @@ def leaderboard():
     return render_template("leaderboard.html", table=table, comps=comps)
 
 
-
+# PROFILE
+@app.route("/profile/<username>", methods=['POST', 'GET'])
+def profile(username):
+    user = db_execute("SELECT * FROM users WHERE username = %s;", (username,))
+    if not user:
+        # User not found
+        return render_template("profile.html")
+    
+    if request.method == "GET":
+        # Render profile, check box if leaderboard = True in .db
+        return render_template("profile.html", username=username, checked=user[0][3])
+    
+    else:
+        add_to_lb = False if request.form.get("leaderboard-check") is None else True
+        if session["username"] == username:
+            db_execute("UPDATE users SET leaderboard = %s WHERE id = %s", (add_to_lb, session["user_id"]))        
+            return render_template("profile.html", username=username, checked=add_to_lb, status="Your profile has been updated.")
+        else:
+            return render_template("profile.html", username=username, checked=add_to_lb)
 
 
 # REGISTER, LOGIN & LOGOUT ROUTES
-
 @app.route("/register", methods=["GET", "POST"])
 def register():
     """Register user"""
@@ -177,7 +197,12 @@ def register():
 
     else:
         username = request.form.get("username")
-        password = request.form.get("password")
+        password = request.form.get("password")       
+        add_to_lb = False if request.form.get("leaderboard-check") is None else True
+        
+
+        print(add_to_lb)
+        
 
         res = password_check(password)
 
@@ -202,7 +227,7 @@ def register():
             return render_template("register.html", error="Username already in use.")
 
         #db.execute("INSERT INTO users (username, hash) VALUES(?, ?)", username, generate_password_hash(password))
-        db_execute("INSERT INTO users (username, hash) VALUES(%s, %s);", (username, generate_password_hash(password)))
+        db_execute("INSERT INTO users (username, hash, leaderboard) VALUES(%s, %s, %s);", (username, generate_password_hash(password), add_to_lb))
         return render_template("login.html")
 
 
