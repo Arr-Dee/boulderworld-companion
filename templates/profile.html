@@ -8,20 +8,40 @@
 <div class="container py-5">
     {% if username is defined %}
     <h2>{{ username }}</h2>
+        {% if data is defined and data %}
+            <h5>Scores</h5>
+            <table id="leaderboard-table">
+                <thead>
+                    <tr>
+                        <td><b>Competition</b></td>
+                        <td><b>Score</b></td></tr>
+                    </thead>
+                    <tbody>
+                        {% for row in data %}
+                            <tr>
+                                <td>{{ row[0] }}</td>
+                                <td>{{ row[1] }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+            </table>
+        {% else %}
+            <h6>This user has not enabled score sharing.</h6>
+        {% endif %}
         {% if username == session["username"] %}
-            <form action={{ "/profile/" + username }} method="post">
+            <form class="py-3" action={{ "/profile/" + username }} method="post">
                 <div class="mb-3">
                     <input type="checkbox" id="leaderboard-check" name="leaderboard-check" {% if checked == True %} checked {% endif %}>
-                    <label for="leaderboard-check">Add my scores to the leaderboard</label><br>
+                    <label for="leaderboard-check">Share my scores with others on my profile and leaderboard?</label><br>
                 </div>
                 <button class="btn btn-primary" type="submit">Update</button>
             </form>
             {% if status is defined %}
-            <p class="py-3" style="color:green;">{{ status }}</p>
+                <p class="py-3" style="color:green;">{{ status }}</p>
             {% endif %}
         {% endif %}
     {% else %}
-    <h2>Oops, the user you are looking does not exist.</h2>
+        <h2>Oops, the user you are looking does not exist.</h2>
     {% endif %}
 </div>
 

@@ -159,8 +159,9 @@ def leaderboard():
     results = db_execute("SELECT users.username, comps.name, results.results, comps.zone, comps.top FROM results INNER JOIN comps ON results.comp = comps.comp INNER JOIN users ON results.user_id = users.id WHERE users.leaderboard is TRUE ORDER BY comps.id")
 
     # drop down to select comp
-    comps = list(set([i[1] for i in results]))
-    print(comps)
+    comps = db_execute("SELECT name FROM comps ORDER BY id")
+    comps = [i[0] for i in comps]
+    
     # show scores per user in a table
     table = [[i[0], i[1], calculate_score(json.loads(i[2]),i[3],i[4])] for i in results]
 
@@ -171,21 +172,34 @@ def leaderboard():
 @app.route("/profile/<username>", methods=['POST', 'GET'])
 def profile(username):
     user = db_execute("SELECT * FROM users WHERE username = %s;", (username,))
+    print(user[0])
+    data = None
+    
+    if user[0][3] or session["username"] == username:
+        data = db_execute("SELECT comps.name, results.results, comps.zone, comps.top FROM results INNER JOIN comps ON results.comp = comps.comp WHERE results.user_id = (SELECT id FROM users WHERE username = %s ORDER BY comps.id)", (username,))
+        print(data)
+        data = [[i[0], calculate_score(json.loads(i[1]),i[2],i[3])] for i in data]
+        print(data)
+        
     if not user:
         # User not found
         return render_template("profile.html")
     
     if request.method == "GET":
         # Render profile, check box if leaderboard = True in .db
-        return render_template("profile.html", username=username, checked=user[0][3])
+        return render_template("profile.html", username=username, checked=user[0][3], data=data)
     
     else:
         add_to_lb = False if request.form.get("leaderboard-check") is None else True
         if session["username"] == username:
             db_execute("UPDATE users SET leaderboard = %s WHERE id = %s", (add_to_lb, session["user_id"]))        
-            return render_template("profile.html", username=username, checked=add_to_lb, status="Your profile has been updated.")
+            return render_template("profile.html", username=username, checked=add_to_lb, data=data, status="Your profile has been updated.")
         else:
-            return render_template("profile.html", username=username, checked=add_to_lb)
+            return render_template("profile.html", username=username, checked=add_to_lb, data=data)
+
+
+
+
 
 
 # REGISTER, LOGIN & LOGOUT ROUTES

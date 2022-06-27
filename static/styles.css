@@ -119,6 +119,10 @@ input[type=number] {
   cursor: pointer;
 }
 
+#profile-link {
+  text-decoration: none;
+}
+
 
 @media screen and (max-width: 767px) {
   .secondary-score-box {
